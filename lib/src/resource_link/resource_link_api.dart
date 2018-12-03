@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:hue_dart/src/core/bridge_client.dart';
 import 'package:hue_dart/src/core/bridge_response.dart';
 import 'package:hue_dart/src/resource_link/resource_link.dart';
+import 'package:hue_dart/src/serializers.dart';
 
 class ResourceLinkApi {
   BridgeClient _client;
@@ -22,8 +23,9 @@ class ResourceLinkApi {
     final resourceLinks = <ResourceLink>[];
     for (String id in response.keys) {
       Map<String, dynamic> item = response[id];
-      final resourceLink = new ResourceLink.fromJson(item);
-      resourceLink.id = id;
+      final resourceLink = standardSerializers
+          .deserializeWith(ResourceLink.serializer, item)
+          .rebuild((b) => b..id = id);
       resourceLinks.add(resourceLink);
     }
     return resourceLinks;
@@ -32,16 +34,16 @@ class ResourceLinkApi {
   Future<ResourceLink> single(String id) async {
     String url = '/api/$_username/resourcelinks/$id';
     final response = await _client.get(url);
-    final resourceLink = new ResourceLink.fromJson(response);
-    resourceLink.id = id;
+    final resourceLink = standardSerializers
+        .deserializeWith(ResourceLink.serializer, response)
+        .rebuild((b) => b..id = id);
     return resourceLink;
   }
 
   Future<ResourceLink> create(ResourceLink resourceLink) async {
     String url = '/api/$_username/resourcelinks';
     final response = await _client.post(url, resourceLink, 'id');
-    resourceLink.id = response.key;
-    return resourceLink;
+    return resourceLink.rebuild((b) => b..id = response.key);
   }
 
   Future<BridgeResponse> update(ResourceLink resourceLink) async {
