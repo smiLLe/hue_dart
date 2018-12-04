@@ -28,6 +28,9 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..add(DownLight.serializer)
       ..add(Entity.serializer)
       ..add(Go.serializer)
+      ..add(Group.serializer)
+      ..add(GroupAction.serializer)
+      ..add(GroupState.serializer)
       ..add(Impulse.serializer)
       ..add(Iris.serializer)
       ..add(LightState.serializer)
@@ -41,6 +44,15 @@ Serializers _$serializers = (new Serializers().toBuilder()
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
           () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(String)]),
+          () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(Light)]),
+          () => new ListBuilder<Light>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(num)]),
+          () => new ListBuilder<num>())
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(num)]),
           () => new ListBuilder<num>()))

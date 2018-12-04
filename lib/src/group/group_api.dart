@@ -4,6 +4,7 @@ import 'package:hue_dart/src/core/bridge_client.dart';
 import 'package:hue_dart/src/core/bridge_response.dart';
 import 'package:hue_dart/src/group/group.dart';
 import 'package:hue_dart/src/light/light.dart';
+import 'package:hue_dart/src/serializers.dart';
 
 class GroupApi {
   final BridgeClient _client;
@@ -24,20 +25,21 @@ class GroupApi {
     final groups = <Group>[];
     for (String key in response.keys) {
       Map<String, dynamic> item = response[key];
-      var group = new Group.fromJson(item);
-      group.id = int.parse(key);
-      groups.add(group);
+
+      final group = standardSerializers
+          .deserializeWith(Group.serializer, item)
+          .rebuild((b) => b..id = int.parse(key));
+      final lights = await _lights(group);
+      groups.add(group.rebuild((b) => b..lights.replace(lights)));
     }
-    for (Group group in groups) {
-      group.lights = await _lights(group.lights);
-    }
+
     return groups;
   }
 
-  Future<List<Light>> _lights(List<Light> lights) async {
+  Future<List<Light>> _lights(Group group) async {
     var result = <Light>[];
-    for (Light _light in lights) {
-      result.add(await _completeLight(_light.id));
+    for (String _light in group.lightIds) {
+      result.add(await _completeLight(int.parse(_light)));
     }
     ;
     return result;
@@ -54,18 +56,18 @@ class GroupApi {
   Future<Group> single(int id) async {
     String url = '/api/$_username/groups/$id';
     final response = await _client.get(url);
-    var group = new Group.fromJson(response);
-    group.id = id;
-    group.lights = await _lights(group.lights);
-    return group;
+    final group = standardSerializers
+        .deserializeWith(Group.serializer, response)
+        .rebuild((b) => b..id = id);
+    final lights = await _lights(group);
+    return group.rebuild((b) => b..lights.replace(lights));
   }
 
   Future<Group> create(Group group) async {
     String url = '/api/$_username/groups';
     final response =
         await _client.post(url, group.toBridgeObject(action: 'create'), 'id');
-    group.id = int.parse(response.key);
-    return group;
+    return group.rebuild((b) => b..id = int.parse(response.key));
   }
 
   Future<BridgeResponse> attributes(Group group) async {

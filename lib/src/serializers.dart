@@ -1,6 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:built_value/serializer.dart';
 import 'package:built_value/standard_json_plugin.dart';
+import 'package:hue_dart/src/group/group.dart';
 import 'package:hue_dart/src/light/light.dart';
 import 'package:hue_dart/src/resource_link/resource_link.dart';
 
@@ -25,6 +26,9 @@ part 'serializers.g.dart';
   White,
   UnknownLight,
   LightState,
+  Group,
+  GroupState,
+  GroupAction,
 ])
 final Serializers serializers = _$serializers;
 

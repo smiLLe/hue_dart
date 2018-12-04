@@ -249,8 +249,14 @@ void main() {
 
     test('create group', () async {
       mockPost('[{"success":{"id":"1"}}]');
-      final group = new Group.namedWithLights('Room 2',
-          [LightFactory.create(null, '1'), LightFactory.create(null, '2')]);
+      final group = Group((b) => b
+        ..name = 'Room 2'
+        ..type = 'Room'
+        ..className = 'Other'
+        ..lightIds.replace(['1', '2'])
+        ..lights.replace(
+            [LightFactory.create(null, '1'), LightFactory.create(null, '2')]));
+
       final response = await sut.createGroup(group);
       expect(response.id, 1);
       final body = {
@@ -266,11 +272,13 @@ void main() {
     test('update group attributes', () async {
       mockPut(
           '[{"success":{"/groups/1/lights":["1"]}},{"success":{"/groups/1/name":"Kitchen"}}]');
-      final group = new Group.namedWithLights('Room 2', [
-        LightFactory.create(null, '1'),
-      ]);
-      group.id = 1;
-      group.className = 'Kitchen';
+      final group = Group((b) => b
+        ..id = 1
+        ..name = 'Room 2'
+        ..lightIds.replace(['1'])
+        ..lights.replace([LightFactory.create(null, '1')])
+        ..className = 'Kitchen');
+
       final response = await sut.updateGroupAttributes(group);
       expect(response.success.length, 2);
       final body = {
@@ -285,13 +293,17 @@ void main() {
     test('update group state', () async {
       mockPut(
           '[{"success":{ "address": "/groups/1/action/on", "value": true}},{"success":{ "address": "/groups/1/action/effect", "value":"colorloop"}},{"success":{ "address": "/groups/1/action/hue", "value":6000}}]');
-      final group = new Group.namedWithLights('Room 2', [
-        LightFactory.create(null, '1'),
-      ]);
-      group.id = 1;
-      group.action.on = true;
-      group.action.hue = 2000;
-      group.action.effect = 'colorloop';
+      final group = Group((b) => b
+        ..id = 1
+        ..name = 'Room 2'
+        ..lightIds.replace(['1'])
+        ..lights.replace([LightFactory.create(null, '1')])
+        ..className = 'Kitchen'
+        ..action.update((u) => u
+          ..on = true
+          ..hue = 2000
+          ..effect = 'colorloop'));
+
       final response = await sut.updateGroupState(group);
       expect(response.success.length, 3);
       final body = {'on': true, 'hue': 2000, 'effect': 'colorloop'};
@@ -301,10 +313,11 @@ void main() {
 
     test('delete group', () async {
       mockDelete('[{"success":"/groups/1 deleted"}]');
-      final group = new Group.namedWithLights('Room 2', [
-        LightFactory.create(null, '1'),
-      ]);
-      group.id = 1;
+      final group = Group((b) => b
+        ..id = 1
+        ..name = 'Room 2'
+        ..lightIds.replace(['1'])
+        ..lights.replace([LightFactory.create(null, '1')]));
       final response = await sut.deleteGroup(group);
       verify(client.delete('http://127.0.0.1/api/username/groups/1'));
       expect(response.success.length, 1);

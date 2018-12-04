@@ -361,8 +361,9 @@ List<Light> _mapFromJsonLights(dynamic lights) {
 List<Group> _mapFromJsonGroups(dynamic groups) {
   var source = groups as Map<String, dynamic>;
   var result = source.keys.map((String id) {
-    final item = new Group.fromJson(source[id]);
-    item.id = int.parse(id);
+    final item = standardSerializers
+        .deserializeWith(Group.serializer, source[id])
+        .rebuild((b) => b..id = int.parse(id));
     return item;
   }).toList();
   return result;
