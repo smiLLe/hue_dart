@@ -22,8 +22,7 @@ class LightApi {
     final lights = <Light>[];
     for (String id in response.keys) {
       Map<String, dynamic> item = response[id];
-      final light = new Light.fromJson(item);
-      light.id = int.parse(id);
+      final light = LightFactory.create(item, id);
       lights.add(light);
     }
     return lights;
@@ -32,9 +31,7 @@ class LightApi {
   Future<Light> single(int id) async {
     String url = '/api/$_username/lights/$id';
     final response = await _client.get(url);
-
-    final light = new Light.fromJson(response);
-    light.id = id;
+    final light = LightFactory.create(response, id);
     return light;
   }
 

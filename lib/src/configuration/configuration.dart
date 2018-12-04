@@ -352,8 +352,7 @@ List<WhiteListItem> _mapFromJsonWhitelist(dynamic whiteList) {
 List<Light> _mapFromJsonLights(dynamic lights) {
   var source = lights as Map<String, dynamic>;
   var result = source.keys.map((String id) {
-    final item = new Light.fromJson(source[id]);
-    item.id = int.parse(id);
+    final item = LightFactory.create(source[id], id);
     return item;
   }).toList();
   return result;

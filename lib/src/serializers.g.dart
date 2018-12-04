@@ -20,8 +20,28 @@ part of 'serializers.dart';
 // ignore_for_file: test_types_in_equals
 
 Serializers _$serializers = (new Serializers().toBuilder()
+      ..add(Ambiance.serializer)
+      ..add(Aura.serializer)
+      ..add(Beyond.serializer)
+      ..add(Bloom.serializer)
+      ..add(Bulb.serializer)
+      ..add(DownLight.serializer)
+      ..add(Entity.serializer)
+      ..add(Go.serializer)
+      ..add(Impulse.serializer)
+      ..add(Iris.serializer)
+      ..add(LightState.serializer)
+      ..add(LightStrip.serializer)
+      ..add(Phoenix.serializer)
       ..add(ResourceLink.serializer)
+      ..add(Spot.serializer)
+      ..add(StoryLight.serializer)
+      ..add(UnknownLight.serializer)
+      ..add(White.serializer)
       ..addBuilderFactory(
           const FullType(BuiltList, const [const FullType(String)]),
-          () => new ListBuilder<String>()))
+          () => new ListBuilder<String>())
+      ..addBuilderFactory(
+          const FullType(BuiltList, const [const FullType(num)]),
+          () => new ListBuilder<num>()))
     .build();

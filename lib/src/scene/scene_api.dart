@@ -46,8 +46,7 @@ class SceneApi {
   Future<Light> _completeLight(int id) async {
     String url = '/api/$_username/lights/$id';
     final response = await _client.get(url);
-    var light = new Light.fromJson(response);
-    light.id = id;
+    var light = LightFactory.create(response, id);
     return light;
   }
 
@@ -63,7 +62,7 @@ class SceneApi {
   Future<Scene> create(Scene scene) async {
     String url = '/api/$_username/scenes';
     final response =
-    await _client.post(url, scene.toBridgeObject(action: 'create'), 'id');
+        await _client.post(url, scene.toBridgeObject(action: 'create'), 'id');
     scene.id = response.key;
     return scene;
   }

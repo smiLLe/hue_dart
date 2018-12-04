@@ -249,8 +249,8 @@ void main() {
 
     test('create group', () async {
       mockPost('[{"success":{"id":"1"}}]');
-      final group = new Group.namedWithLights(
-          'Room 2', [new Light.withId('1'), new Light.withId('2')]);
+      final group = new Group.namedWithLights('Room 2',
+          [LightFactory.create(null, '1'), LightFactory.create(null, '2')]);
       final response = await sut.createGroup(group);
       expect(response.id, 1);
       final body = {
@@ -266,8 +266,9 @@ void main() {
     test('update group attributes', () async {
       mockPut(
           '[{"success":{"/groups/1/lights":["1"]}},{"success":{"/groups/1/name":"Kitchen"}}]');
-      final group =
-          new Group.namedWithLights('Room 2', [new Light.withId('1')]);
+      final group = new Group.namedWithLights('Room 2', [
+        LightFactory.create(null, '1'),
+      ]);
       group.id = 1;
       group.className = 'Kitchen';
       final response = await sut.updateGroupAttributes(group);
@@ -284,8 +285,9 @@ void main() {
     test('update group state', () async {
       mockPut(
           '[{"success":{ "address": "/groups/1/action/on", "value": true}},{"success":{ "address": "/groups/1/action/effect", "value":"colorloop"}},{"success":{ "address": "/groups/1/action/hue", "value":6000}}]');
-      final group =
-          new Group.namedWithLights('Room 2', [new Light.withId('1')]);
+      final group = new Group.namedWithLights('Room 2', [
+        LightFactory.create(null, '1'),
+      ]);
       group.id = 1;
       group.action.on = true;
       group.action.hue = 2000;
@@ -299,8 +301,9 @@ void main() {
 
     test('delete group', () async {
       mockDelete('[{"success":"/groups/1 deleted"}]');
-      final group =
-          new Group.namedWithLights('Room 2', [new Light.withId('1')]);
+      final group = new Group.namedWithLights('Room 2', [
+        LightFactory.create(null, '1'),
+      ]);
       group.id = 1;
       final response = await sut.deleteGroup(group);
       verify(client.delete('http://127.0.0.1/api/username/groups/1'));
@@ -354,59 +357,71 @@ void main() {
       List<Map<String, String>> models = [
         {
           'id': 'LTP001',
-          'runtimeType': 'Ambiance',
+          'runtimeType': '_\$Ambiance',
           'productName': 'Ambiance Pendant'
         },
         {
           'id': 'LLC014',
-          'runtimeType': 'Aura',
+          'runtimeType': '_\$Aura',
           'productName': 'Living Colors Gen3 Aura'
         },
         {
           'id': 'HBL001',
-          'runtimeType': 'Beyond',
+          'runtimeType': '_\$Beyond',
           'productName': 'Hue Beyond Table'
         },
         {
           'id': 'LLC005',
-          'runtimeType': 'Bloom',
+          'runtimeType': '_\$Bloom',
           'productName': 'Hue Living Colors Bloom'
         },
-        {'id': 'LCT001', 'runtimeType': 'Bulb', 'productName': 'Hue bulb A19'},
-        {'id': 'LCT011', 'runtimeType': 'DownLight', 'productName': 'Hue BR30'},
+        {
+          'id': 'LCT001',
+          'runtimeType': '_\$Bulb',
+          'productName': 'Hue bulb A19'
+        },
+        {
+          'id': 'LCT011',
+          'runtimeType': '_\$DownLight',
+          'productName': 'Hue BR30'
+        },
         {
           'id': 'HEL001',
-          'runtimeType': 'Entity',
+          'runtimeType': '_\$Entity',
           'productName': 'Hue Entity Table'
         },
-        {'id': 'LLC020', 'runtimeType': 'Go', 'productName': 'Hue Go'},
+        {'id': 'LLC020', 'runtimeType': '_\$Go', 'productName': 'Hue Go'},
         {
           'id': 'HIL001',
-          'runtimeType': 'Impulse',
+          'runtimeType': '_\$Impulse',
           'productName': 'Hue Impulse Table'
         },
         {
           'id': 'LLC010',
-          'runtimeType': 'Iris',
+          'runtimeType': '_\$Iris',
           'productName': 'Hue Living Colors Iris'
         },
         {
           'id': 'LST001',
-          'runtimeType': 'LightStrip',
+          'runtimeType': '_\$LightStrip',
           'productName': 'Hue LightStrip'
         },
         {
           'id': 'HML001',
-          'runtimeType': 'Phoenix',
+          'runtimeType': '_\$Phoenix',
           'productName': 'Hue Phoenix Centerpiece'
         },
-        {'id': 'LCT003', 'runtimeType': 'Spot', 'productName': 'Hue Spot GU10'},
+        {
+          'id': 'LCT003',
+          'runtimeType': '_\$Spot',
+          'productName': 'Hue Spot GU10'
+        },
         {
           'id': 'LLC013',
-          'runtimeType': 'StoryLight',
+          'runtimeType': '_\$StoryLight',
           'productName': 'Disney Living Colors'
         },
-        {'id': 'LDF002', 'runtimeType': 'White', 'productName': 'White'}
+        {'id': 'LDF002', 'runtimeType': '_\$White', 'productName': 'White'}
       ];
       for (Map<String, String> model in models) {
         testModelId(model['id'], model['runtimeType'], model['productName']);
@@ -416,16 +431,22 @@ void main() {
     test('calling attributes() expects a map with state', () async {
       mockPut(
           '[{"success":{"/lights/1/state/xy":[0.168,0.041]}},{"success":{"/lights/1/state/ct":0}},{"success":{"/lights/1/state/alert":"none"}},{"success":{"/lights/1/state/sat":254}},{"success":{"/lights/1/state/effect":"none"}},{"success":{"/lights/1/state/bri":10}},{"success":{"/lights/1/state/hue":4444}},{"error":{"address":"/lights/1/state/colormode","description":"parameter, colormode, not available","type":6}},{"success":{"/lights/1/state/on":true}}]');
-      final light = new Light.withId('1');
-      light.state.on = true;
-      light.state.xy = [0.168, 0.041];
-      light.state.ct = 0;
-      light.state.brightness = 10;
-      light.state.alert = 'none';
-      light.state.effect = 'none';
-      light.state.saturation = 254;
-      light.state.hue = 4444;
-      light.state.colorMode = 'ct';
+      final light = LightFactory.create(null, '1').rebuild(
+        (b) => b
+          ..state.update(
+            (u) => u
+              ..on = true
+              ..xy.replace([0.168, 0.041])
+              ..ct = 0
+              ..brightness = 10
+              ..alert = 'none'
+              ..effect = 'none'
+              ..saturation = 254
+              ..hue = 4444
+              ..colorMode = 'ct',
+          ),
+      );
+
       final result = await sut.updateLightState(light);
       expect(result.success.length, 8);
       expect(result.errors.length, 1);
@@ -445,8 +466,8 @@ void main() {
 
     test('calling state() expects a map with name', () async {
       mockPut('[{"success":{"/lights/1/name":"test name"}}]');
-      final light = new Light.withId('1');
-      light.name = 'test name';
+      final light =
+          LightFactory.create(null, '1').rebuild((b) => b..name = 'test name');
       final result = await sut.renameLight(light);
       expect(result.success.length, 1);
       expect(result.errors.length, 0);
@@ -460,11 +481,12 @@ void main() {
           singleLightColorModePlaceHolder.replaceFirst('<color_mode>', 'ct'));
       final light = await sut.light(1);
       expect(light.state.colorMode, 'ct');
-      light.changeColor(
-          red: 0.8796791443850267,
-          green: 0.8398430992614165,
-          blue: 0.711241233501953);
-      expect(light.state.ct, 230);
+      final newLight = light.rebuild((b) => b
+        ..state.replace(light.state.changeColor(
+            red: 0.8796791443850267,
+            green: 0.8398430992614165,
+            blue: 0.711241233501953)));
+      expect(newLight.state.ct, 230);
     });
 
     test('change color of light with color mode hs', () async {
@@ -472,13 +494,14 @@ void main() {
           singleLightColorModePlaceHolder.replaceFirst('<color_mode>', 'hs'));
       final light = await sut.light(1);
       expect(light.state.colorMode, 'hs');
-      light.changeColor(
-          red: 0.8796791443850267,
-          green: 0.8398430992614165,
-          blue: 0.711241233501953);
-      expect(light.state.hue, 8339);
-      expect(light.state.saturation, 49);
-      expect(light.state.brightness, 224);
+      final newLight = light.rebuild((b) => b
+        ..state.replace(light.state.changeColor(
+            red: 0.8796791443850267,
+            green: 0.8398430992614165,
+            blue: 0.711241233501953)));
+      expect(newLight.state.hue, 8339);
+      expect(newLight.state.saturation, 49);
+      expect(newLight.state.brightness, 224);
     });
 
     test('change color of light with color mode xy', () async {
@@ -486,8 +509,10 @@ void main() {
           singleLightColorModePlaceHolder.replaceFirst('<color_mode>', 'xy'));
       final light = await sut.light(1);
       expect(light.state.colorMode, 'xy');
-      light.changeColor(red: 1.0, blue: 1.0, green: 1.0);
-      expect(light.state.xy, [0.32272672086556803, 0.32902290955907926]);
+      final newLight = light.rebuild((b) => b
+        ..state
+            .replace(light.state.changeColor(red: 1.0, blue: 1.0, green: 1.0)));
+      expect(newLight.state.xy, [0.32272672086556803, 0.32902290955907926]);
     });
 
     test('convert color of light to rgb with color mode ct', () async {
@@ -495,7 +520,7 @@ void main() {
           singleLightColorModePlaceHolder.replaceFirst('<color_mode>', 'ct'));
       final light = await sut.light(1);
       expect(light.state.colorMode, 'ct');
-      final colors = light.colors();
+      final colors = light.state.colors;
 
       expect(colors.temperature, 2732);
       expect(colors.ct, 366);
@@ -514,7 +539,7 @@ void main() {
           singleLightColorModePlaceHolder.replaceFirst('<color_mode>', 'hs'));
       final light = await sut.light(1);
       expect(light.state.colorMode, 'hs');
-      final colors = light.colors();
+      final colors = light.state.colors;
 
       expect(colors.hue, 48420);
       expect(colors.saturation, 254);
@@ -533,7 +558,7 @@ void main() {
           singleLightColorModePlaceHolder.replaceFirst('<color_mode>', 'xy'));
       final light = await sut.light(1);
       expect(light.state.colorMode, 'xy');
-      final colors = light.colors();
+      final colors = light.state.colors;
 
       expect(colors.xy[0], 0.4575);
       expect(colors.xy[1], 0.4101);
@@ -581,7 +606,7 @@ void main() {
 
     test('delete light', () async {
       mockDelete('[{"success":"/lights/1 deleted"}]');
-      final light = new Light.withId('1');
+      final light = LightFactory.create(null, '1');
       final response = await sut.deleteLight(light);
       verify(client.delete('http://127.0.0.1/api/username/lights/1'));
       expect(response.success.length, 1);
@@ -805,7 +830,10 @@ void main() {
       mockPost('[{"success":{"id":"42YARQOHMNIPia6"}}]');
       final scene = new Scene();
       scene.name = 'Amazing Scene';
-      scene.lights = [new Light.withId('1'), new Light.withId('2')];
+      scene.lights = [
+        LightFactory.create(null, '1'),
+        LightFactory.create(null, '2')
+      ];
 
       final response = await sut.createScene(scene);
       expect(response.id, '42YARQOHMNIPia6');
@@ -824,7 +852,10 @@ void main() {
       final scene = new Scene();
       scene.id = '42YARQOHMNIPia6';
       scene.name = 'New Scene';
-      scene.lights = [new Light.withId('1'), new Light.withId('2')];
+      scene.lights = [
+        LightFactory.create(null, '1'),
+        LightFactory.create(null, '2')
+      ];
 
       final response = await sut.updateSceneAttributes(scene);
       expect(response.success.length, 2);
@@ -842,10 +873,15 @@ void main() {
       final scene = new Scene();
       scene.id = '42YARQOHMNIPia6';
 
-      final light = new Light.withId('1');
-      light.state.on = true;
-      light.state.hue = 144;
-      light.state.effect = 'none';
+      final light = LightFactory.create(null, '1').rebuild(
+        (b) => b
+          ..state.update(
+            (u) => u
+              ..on = true
+              ..hue = 144
+              ..effect = 'none',
+          ),
+      );
 
       final response = await sut.updateSceneLightState(scene, light);
       expect(response.success.length, 3);

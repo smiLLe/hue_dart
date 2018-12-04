@@ -108,7 +108,8 @@ class AppData extends Object with _$AppDataSerializerMixin {
 
 List<Light> _mapFromJsonLights(dynamic lights) {
   var source = lights as List<dynamic>;
-  var result =
-  source.map((dynamic id) => new Light.withId(id.toString())).toList();
+  var result = source
+      .map((dynamic id) => LightFactory.create({'modelid': ''}, id.toString()))
+      .toList();
   return result;
 }

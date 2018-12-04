@@ -46,8 +46,7 @@ class GroupApi {
   Future<Light> _completeLight(int id) async {
     String url = '/api/$_username/lights/$id';
     final response = await _client.get(url);
-    var light = new Light.fromJson(response);
-    light.id = id;
+    var light = LightFactory.create(response, id);
     return light;
   }
 
@@ -64,7 +63,7 @@ class GroupApi {
   Future<Group> create(Group group) async {
     String url = '/api/$_username/groups';
     final response =
-    await _client.post(url, group.toBridgeObject(action: 'create'), 'id');
+        await _client.post(url, group.toBridgeObject(action: 'create'), 'id');
     group.id = int.parse(response.key);
     return group;
   }

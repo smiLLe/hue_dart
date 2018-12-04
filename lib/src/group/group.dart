@@ -95,7 +95,7 @@ class Group extends Object with _$GroupSerializerMixin, BridgeObject {
       action.ct = colors.ct.toInt();
     } else if (action.colorMode == 'hs') {
       HueColor colors =
-      colorHelper.rgbToHueSaturationBrightness(red, green, blue);
+          colorHelper.rgbToHueSaturationBrightness(red, green, blue);
       action.hue = colors.hue.toInt();
       action.saturation = colors.saturation.toInt();
       action.brightness = colors.brightness.toInt();
@@ -252,5 +252,7 @@ class Action extends Object with _$ActionSerializerMixin, BridgeObject {
 
 List<Light> _mapFromJsonLights(dynamic lights) {
   var source = lights as List<dynamic>;
-  return source.map((dynamic id) => new Light.withId(id.toString())).toList();
+  return source
+      .map((dynamic id) => LightFactory.create({'modelid': ''}, id.toString()))
+      .toList();
 }
